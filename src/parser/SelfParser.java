@@ -3,15 +3,18 @@ package parser;
 import static org.junit.jupiter.api.Assertions.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
 public class SelfParser {
 
 	static int score = 0;
-
+	static String feedback = "";
+	
 	@Test
 	public void parseClass() {
 		try {
@@ -23,8 +26,10 @@ public class SelfParser {
 			}
 			br.close();
 			if (code.contains("int total")) {
-				System.out.println("Correct declaration of variable 'total'.");
+				feedback += "Correct declaration of variable 'total'. ";
 				score += 10;
+			} else {
+				feedback += "Incorrect declaration of variable 'total'. ";
 			}
 		} catch (Exception e) {
 
@@ -37,17 +42,30 @@ public class SelfParser {
 		ClassToTest ctt = new ClassToTest();
 		try {
 			assertNotNull(ctt);
-			System.out.println("Constructor successful.");
+			feedback += "Constructor successful. ";
 			score += 10;
 		} catch (AssertionError cf) {
-			System.out.println("Constructor unsuccessful.");
+			feedback += "Constructor unsuccessful. ";
 		}
 
 	}
 
+	//Runs last
 	@AfterAll
 	public static void outputScore() {
-		System.out.println("\nScore: " + score);
+		System.out.println(feedback);
+		System.out.println("Score: " + score);
+		try {
+			FileWriter fw = new FileWriter("data.csv",true);
+			PrintWriter out = new PrintWriter(fw);
+			out.print(feedback + ",");
+			out.print(Integer.toString(score));
+			out.print("\n");
+			fw.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
 	}
 
 }
